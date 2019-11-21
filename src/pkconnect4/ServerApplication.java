@@ -22,6 +22,9 @@ import javafx.stage.Stage;
 
 
 public class ServerApplication extends Application {
+	
+	/* author: ian maloney & akash chinnasamy */
+	
 	public static ArrayList<Thread> threads;
 	public static void main(String[] args){
 		launch();
@@ -31,7 +34,7 @@ public class ServerApplication extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
 		threads = new ArrayList<Thread>();
-		primaryStage.setTitle("JavaFX Chat Server");
+		primaryStage.setTitle("PKConnect4 Server");
 		primaryStage.setScene(makePortUI(primaryStage));
 		primaryStage.show();
 		

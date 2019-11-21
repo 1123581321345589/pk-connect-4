@@ -47,6 +47,8 @@ import javafx.stage.Stage;
 
 
 public class PKConnect4 extends Application{
+	
+	/* author trevor ward */
 
 private TabPane mainPage = new TabPane();
 private VBox root = new VBox();
@@ -130,10 +132,12 @@ public Scene welcomeScreen(Stage stage){
 	TextField portNumberField = new TextField();
 
 	/* Make the labels and set properties */
-	Label nameLabel = new Label("Name ");
+	Label nameLabel = new Label("User Name ");
 	Label hostNameLabel = new Label("Host Name");
 	Label portNumberLabel = new Label("Port Number");
 	Label errorLabel = new Label();
+	Label title = new Label("PK-Connect4");
+	
 	/* Make the button and its handler */
 	Button submitClientInfoButton = new Button("Done");
 	submitClientInfoButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -143,6 +147,7 @@ public Scene welcomeScreen(Stage stage){
 			/* Instantiate the client class and start it's thread */
 			Client client;
 			try {
+				
 				client = new Client(hostNameField.getText(), Integer
 						.parseInt(portNumberField.getText()), nameField
 						.getText());
@@ -150,6 +155,7 @@ public Scene welcomeScreen(Stage stage){
 				clientThread.setDaemon(true);
 				clientThread.start();
 				threads.add(clientThread);
+				compute(nameField.getText());
 				
 				/* Change the scene of the primaryStage */
 				stage.close();
@@ -166,6 +172,12 @@ public Scene welcomeScreen(Stage stage){
 				errorLabel.setTextFill(Color.RED);
 				errorLabel.setText("Invalid port number, try again");
 			}
+			catch (nameException e) {
+				errorLabel.setTextFill(Color.RED);
+				errorLabel.setText("Invalid name, try again");
+				
+				
+			}
 			
 		}
 	});
@@ -174,6 +186,7 @@ public Scene welcomeScreen(Stage stage){
 	 * Add the components to the root pane arguments are (Node, Column
 	 * Number, Row Number)
 	 */
+
 	rootPane.add(nameField, 0, 0);
 	rootPane.add(nameLabel, 1, 0);
 	rootPane.add(hostNameField, 0, 1);
@@ -182,6 +195,8 @@ public Scene welcomeScreen(Stage stage){
 	rootPane.add(portNumberLabel, 1, 2);
 	rootPane.add(submitClientInfoButton, 0, 3, 2, 1);
 	rootPane.add(errorLabel, 0, 4);
+	
+	
 	/* Make the Scene and return it */
 	return new Scene(rootPane, 400, 400);
 	
@@ -202,8 +217,22 @@ void tooShort(){
         }
     }
 
+	
+	
+
+public static void compute(String name) throws nameException {
+    if (name.length() < 8 || name.length() > 16) {
+    	
+       throw new nameException(name);
+ }
+
+}
+
+
+
+
 public static void main(String[] args) {
     launch(args); 
-}
+	}
 
 }
