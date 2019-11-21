@@ -13,6 +13,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class Client implements Runnable {
+	
+	
+	/* author: ian maloney & akash chinnasamy */
+	
+	
 	/* The Socket of the Client */
 	private Socket clientSocket;
 	private BufferedReader serverToClientReader;
