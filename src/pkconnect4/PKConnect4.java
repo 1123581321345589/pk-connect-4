@@ -128,15 +128,12 @@ public Scene welcomeScreen(Stage stage){
 
 	/* Make the text fields and set properties */
 	TextField nameField = new TextField();
-	TextField hostNameField = new TextField();
-	TextField portNumberField = new TextField();
-
+	
 	/* Make the labels and set properties */
 	Label nameLabel = new Label("User Name ");
-	Label hostNameLabel = new Label("Host Name");
-	Label portNumberLabel = new Label("Port Number");
+	
 	Label errorLabel = new Label();
-	Label title = new Label("PK-Connect4");
+	
 	
 	/* Make the button and its handler */
 	Button submitClientInfoButton = new Button("Done");
@@ -148,8 +145,7 @@ public Scene welcomeScreen(Stage stage){
 			Client client;
 			try {
 				
-				client = new Client(hostNameField.getText(), Integer
-						.parseInt(portNumberField.getText()), nameField
+				client = new Client("10.220.50.184", 9999, nameField
 						.getText());
 				Thread clientThread = new Thread(client);
 				clientThread.setDaemon(true);
@@ -189,10 +185,6 @@ public Scene welcomeScreen(Stage stage){
 
 	rootPane.add(nameField, 0, 0);
 	rootPane.add(nameLabel, 1, 0);
-	rootPane.add(hostNameField, 0, 1);
-	rootPane.add(hostNameLabel, 1, 1);
-	rootPane.add(portNumberField, 0, 2);
-	rootPane.add(portNumberLabel, 1, 2);
 	rootPane.add(submitClientInfoButton, 0, 3, 2, 1);
 	rootPane.add(errorLabel, 0, 4);
 	
