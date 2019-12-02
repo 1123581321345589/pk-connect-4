@@ -1,4 +1,4 @@
-package pkconnect4;
+package Client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,16 +27,17 @@ public class Client implements Runnable {
 	
 	
 	/* The Socket of the Client */
-        private final int CELL_SIZE = 100;
+    private final int CELL_SIZE = 100;
 	private Socket clientSocket;
 	private BufferedReader serverToClientReader;
 	private PrintWriter clientToServerWriter;
 	public String name;
 	public ObservableList<String> chatLog;
-        public ObservableList<Label> hostList;
-        public String[] opcode;
-        public boolean waiting = false;
-        public RunningGame game;
+    public ObservableList<Label> hostList;
+    public String[] opcode;
+    public boolean waiting = false;
+    public RunningGame game;
+    
 
 	public Client(String hostName, int portNumber, String name) throws UnknownHostException, IOException {
 		

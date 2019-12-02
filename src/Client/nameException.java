@@ -1,4 +1,4 @@
-package pkconnect4;
+package Client;
 
 public class nameException extends Exception{
 	String id;
