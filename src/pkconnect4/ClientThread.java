@@ -20,6 +20,8 @@ public class ClientThread implements Runnable {
 	private PrintWriter outgoingMessageWriter;
 	/* The name of the client */
 	private String clientName;
+        
+        private String[] opcode = new String[3];
 
 	public ClientThread(Socket clientSocket, Server baseServer) {
 		this.setClientSocket(clientSocket);
@@ -57,6 +59,8 @@ public class ClientThread implements Runnable {
 			String inputToServer;
 			while (true) {
 				inputToServer = incomingMessageReader.readLine();
+                                messageDecoder(inputToServer);
+                                System.out.println("Now we're in the client thread with:\n" + inputToServer);
 				baseServer.writeToAllSockets(inputToServer);
 			}
 		} catch (SocketException e) {
@@ -67,7 +71,48 @@ public class ClientThread implements Runnable {
 			e.printStackTrace();
 		}
 	}
+        
+          //Break down messages based on game protocol
+        public void messageDecoder(String msg){
+            opcode = new String[]{"", "", ""};
+            
+            char[] code = msg.toCharArray();
+            int arrInd = 0;
+            boolean[] checks = new boolean[]{true, true};
+            
+            int ocInd = 0;
+            while(checks[0]){
+                if(code[arrInd] != ';'){
+                    opcode[ocInd] += code[arrInd];
+                }
+                else{
+                    checks[0] = false;
+                }
+                arrInd++;
+            }
+            
+            ocInd++;
+            while(checks[1]){
+                if(code[arrInd] != ';'){
+                    opcode[ocInd] += code[arrInd];
+                }
+                else{
+                    checks[1] = false;
+                }
+                arrInd++;
+            }
+            
+            ocInd++;
+            for(; arrInd < msg.length(); arrInd++){
+                opcode[ocInd] += code[arrInd];
+            }
+            
+            System.out.println("opcode[0] = "+opcode[0]);
+            System.out.println("opcode[1] = "+opcode[1]);
+            System.out.println("opcode[2] = "+opcode[2]);
+        }
 
+        
 	public void writeToServer(String input) {
 		outgoingMessageWriter.println(input);
 	}

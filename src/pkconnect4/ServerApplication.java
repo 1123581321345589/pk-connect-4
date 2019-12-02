@@ -26,7 +26,8 @@ public class ServerApplication extends Application {
 	/* author: ian maloney & akash chinnasamy */
 	
 	public static ArrayList<Thread> threads;
-	public static void main(String[] args){
+        
+        public static void main(String[] args){
 		launch();
 	}
 	

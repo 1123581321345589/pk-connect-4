@@ -16,6 +16,11 @@ public class Server implements Runnable {
 	private ArrayList<ClientThread> clientThreads;
 	public ObservableList<String> serverLog;
 	public ObservableList<String> clientNames;
+        private int gameInd = 0;
+        
+        /* String array containing message formatted for game protocol */
+        public String[] opcode = new String[3];
+        
 	public Server(int portNumber) throws IOException {
 		this.portNumber = portNumber;
 		serverLog = FXCollections.observableArrayList();
@@ -106,11 +111,13 @@ public class Server implements Runnable {
 		
 		
 	}
-
+        
+      
 	public void writeToAllSockets(String input) {
-		for (ClientThread clientThread : clientThreads) {
-			clientThread.writeToServer(input);
-		}
+                
+            for (ClientThread clientThread : clientThreads) {
+		clientThread.writeToServer(input);
+            }
 	}
 
 }
