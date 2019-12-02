@@ -34,6 +34,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
@@ -50,20 +51,9 @@ public class PKConnect4 extends Application{
 	
 	/* author trevor ward */
 
-private TabPane mainPage = new TabPane();
-private VBox root = new VBox();
-private Scene scene;
-private final Button send = new Button("Send");
-private final VBox chatBox = new VBox(5);
-private final TextField chatField = new TextField();
-private List<Label> messages = new ArrayList<>();
-private ScrollPane container = new ScrollPane();
-private int index = 0;
-private GameUser user = new GameUser();
-private VBox btnBox = new VBox();
+private final TabPane lobbyTabs = new TabPane();
 private ArrayList<Thread> threads;
-
-public final int WIN_SIZE = 480;
+public final int CELL_SIZE = 100;
 
 public final String style = "-fx-background: white;";
 
@@ -74,36 +64,43 @@ public void start(Stage stage) throws Exception{
 	threads = new ArrayList<Thread>();
 	stage.setTitle("PKConnect4");
 	stage.setScene(welcomeScreen(stage));
+        stage.setResizable(false);
 	stage.show();
 
 }
 
 //Sets up Chatroom UI layout
 private Scene initChatBox(Client client){
-
+        //Create TabPane and Tabs for Main Lobby
+        Tab tab1 = new Tab("CHAT");
+        Tab tab2 = new Tab("GAMES");
+        tab1.setClosable(false);
+        tab2.setClosable(false);
+        lobbyTabs.getTabs().addAll(tab1, tab2);
+        //
+        
+        //Set up layout for Chat Lobby
 	GridPane rootPane = new GridPane();
 	rootPane.setPadding(new Insets(20));
 	rootPane.setAlignment(Pos.CENTER);
 	rootPane.setHgap(10);
 	rootPane.setVgap(10);
-
-	/*
+        
+        /*
 	 * Make the Chat's listView and set it's source to the Client's chatLog
 	 * ArrayList
 	 */
-	ListView<String> chatListView = new ListView<String>();
+	ListView<String> chatListView = new ListView<>();
 	chatListView.setItems(client.chatLog);
-
-	/*
-	 * Make the chat text box and set it's action to send a message to the
-	 * server
-	 */
+	
+	//Code for Chat Lobby Outgoing Messages
 	TextField chatTextField = new TextField();
 	chatTextField.setOnAction(new EventHandler<ActionEvent>() {
 		@Override
 		public void handle(ActionEvent event) {
 			// TODO Auto-generated method stub
-			client.writeToServer(chatTextField.getText());
+			client.writeToServer("c","0", client.name +": "+ chatTextField.getText());
+                        
 			chatTextField.clear();
 		}
 	});
@@ -111,32 +108,65 @@ private Scene initChatBox(Client client){
 	/* Add the components to the root pane */
 	rootPane.add(chatListView, 0, 0);
 	rootPane.add(chatTextField, 0, 1);
+        tab1.setContent(rootPane);
+        
+         //Set up layout for Host Lobby
+        GridPane hostPane = new GridPane();
+	hostPane.setPadding(new Insets(20));
+	hostPane.setAlignment(Pos.CENTER);
+	hostPane.setHgap(10);
+	hostPane.setVgap(10);
+        
+        /*
+	 * Make the Hosting Game listView and set it's source to the Client's hostList
+	 * ArrayList
+	 */
+	ListView<Label> hostListView = new ListView<>();
+	hostListView.setItems(client.hostList);
+        
+        //Code for Host Game Button
+        Button gameBtn = new Button("HOST");
+        gameBtn.setOnAction(new EventHandler<ActionEvent>() {
+		@Override
+		public void handle(ActionEvent event) {
+                    if(!client.waiting){
+                        client.writeToServer("h", client.name, "0");
+                        client.waiting = true;
+                    }
+                    else
+                        hosting();
+		}
+	});
+        
+        /* Add the components to the hostPane */
+	hostPane.add(hostListView, 0, 0);
+	hostPane.add(gameBtn, 0, 1);
+        tab2.setContent(hostPane);
 
 	/* Make and return the scene */
-	return new Scene(rootPane, 400, 400);
+	return new Scene(lobbyTabs, 400, 400);
     
 }
 
 //Returns Login Screen
 public Scene welcomeScreen(Stage stage){
     
-	GridPane rootPane = new GridPane();
+	VBox rootPane = new VBox();
 	rootPane.setPadding(new Insets(20));
-	rootPane.setVgap(10);
-	rootPane.setHgap(10);
+	rootPane.setSpacing(10);
 	rootPane.setAlignment(Pos.CENTER);
 
 	/* Make the text fields and set properties */
 	TextField nameField = new TextField();
 	
 	/* Make the labels and set properties */
-	Label nameLabel = new Label("User Name ");
+	Label nameLabel = new Label("Please choose a User Name");
 	
 	Label errorLabel = new Label();
 	
 	
 	/* Make the button and its handler */
-	Button submitClientInfoButton = new Button("Done");
+	Button submitClientInfoButton = new Button("SUBMIT");
 	submitClientInfoButton.setOnAction(new EventHandler<ActionEvent>() {
 		@Override
 		public void handle(ActionEvent Event) {
@@ -145,17 +175,19 @@ public Scene welcomeScreen(Stage stage){
 			Client client;
 			try {
 				
-				client = new Client("10.220.50.184", 9999, nameField
+                                compute(nameField.getText());
+				client = new Client("10.0.0.17", 9999, nameField
 						.getText());
 				Thread clientThread = new Thread(client);
 				clientThread.setDaemon(true);
 				clientThread.start();
 				threads.add(clientThread);
-				compute(nameField.getText());
-				
+                                client.name = nameField.getText();
+                                
 				/* Change the scene of the primaryStage */
 				stage.close();
 				stage.setScene(initChatBox(client));
+                                stage.setTitle("PK-Chat - User: "+ client.name);
 				stage.show();
 			}
 	
@@ -169,8 +201,7 @@ public Scene welcomeScreen(Stage stage){
 				errorLabel.setText("Invalid port number, try again");
 			}
 			catch (nameException e) {
-				errorLabel.setTextFill(Color.RED);
-				errorLabel.setText("Invalid name, try again");
+				tooShort();
 				
 				
 			}
@@ -183,10 +214,7 @@ public Scene welcomeScreen(Stage stage){
 	 * Number, Row Number)
 	 */
 
-	rootPane.add(nameField, 0, 0);
-	rootPane.add(nameLabel, 1, 0);
-	rootPane.add(submitClientInfoButton, 0, 3, 2, 1);
-	rootPane.add(errorLabel, 0, 4);
+	rootPane.getChildren().addAll(nameLabel,nameField,submitClientInfoButton,errorLabel);
 	
 	
 	/* Make the Scene and return it */
@@ -209,6 +237,7 @@ void tooShort(){
         }
     }
 
+//public TabPane
 	
 	
 
@@ -220,7 +249,19 @@ public static void compute(String name) throws nameException {
 
 }
 
-
+    //Alert message informing user game is over
+    void hosting(){
+        Alert quit = new Alert(Alert.AlertType.ERROR, "", 
+                               ButtonType.OK);
+        quit.setGraphic(null);
+        quit.setTitle("Already Hosting...");
+        quit.setHeaderText("You can only host one game at a time!");
+        quit.showAndWait();
+        
+        if(quit.getResult() == ButtonType.OK){
+            quit.close();
+        }
+    }
 
 
 public static void main(String[] args) {

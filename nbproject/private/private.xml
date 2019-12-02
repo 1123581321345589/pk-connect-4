@@ -3,8 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/wardt4/pk-connect-4/src/pkconnect4/Server.java</file>
+            <file>file:/C:/Users/wardt4/pk-connect-4/src/pkconnect4/ServerApplication.java</file>
+            <file>file:/C:/Users/wardt4/pk-connect-4/src/pkconnect4/Client.java</file>
+            <file>file:/C:/Users/wardt4/pk-connect-4/src/pkconnect4/ClientThread.java</file>
             <file>file:/C:/Users/wardt4/pk-connect-4/src/pkconnect4/PKConnect4.java</file>
-            <file>file:/C:/Users/wardt4/pk-connect-4/src/pkconnect4/GameUser.java</file>
+            <file>file:/C:/Users/wardt4/pk-connect-4/src/pkconnect4/RunningGame.java</file>
         </group>
     </open-files>
 </project-private>
