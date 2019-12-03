@@ -28,9 +28,9 @@ public class Client implements Runnable {
 	
 	/* The Socket of the Client */
         private final int CELL_SIZE = 100;
-	private Socket clientSocket;
-	private BufferedReader serverToClientReader;
-	private PrintWriter clientToServerWriter;
+	private final Socket clientSocket;
+	private final BufferedReader serverToClientReader;
+	private final PrintWriter clientToServerWriter;
 	public String name;
 	public ObservableList<String> chatLog;
         public ObservableList<Label> hostList;
@@ -58,7 +58,7 @@ public class Client implements Runnable {
 
 	public void writeToServer(String oc, String dest, String input) {
 		clientToServerWriter.println(oc +";"+ dest +";"+ input);
-                System.out.println("We're in client");
+                System.out.println("Sending to server:\n" + oc +";"+ dest +";"+ input);
 	}
 
 	public void run() {
@@ -71,6 +71,7 @@ public class Client implements Runnable {
 					public void run() {
                                             
                                             messageDecoder(inputFromServer);
+                                            System.out.println("From server:\n" +  opcode[0]+";"+ opcode[1] +";"+ opcode[2]);
                                             
                                             //Case if opcode for CHAT
                                             if(opcode[0].equals("c")){
@@ -82,7 +83,7 @@ public class Client implements Runnable {
                                                 hostList.add(eventLabel(opcode[1], opcode[2]));
                                             }
                                             
-                                            //Case if opcode is to join
+                                            //Case if opcode is to JOIN
                                             else if (opcode[0].equals("j")){
                                                 
                                                 //Code to remove hosted game from list when joined
@@ -99,7 +100,7 @@ public class Client implements Runnable {
                                                 //Initiate host
                                                 if (opcode[1].equals(name)){
                                                     waiting = false;
-                                                    game = new RunningGame(name, name, opcode[2]);
+                                                    game = new RunningGame(name, name, opcode[2], clientToServerWriter);
                                                     game.setAlignment(Pos.CENTER);
                                                     Stage gameStage = new Stage();
                                                     gameStage.setScene(new Scene(game, CELL_SIZE*7, CELL_SIZE*7.5 ));
@@ -111,7 +112,7 @@ public class Client implements Runnable {
                                                 //Initiate guest
                                                 else if(opcode[2].equals(name)){
                                                     waiting = false;
-                                                    game = new RunningGame(name, opcode[1], name);
+                                                    game = new RunningGame(name, opcode[1], name, clientToServerWriter);
                                                     game.setAlignment(Pos.CENTER);
                                                     Stage gameStage = new Stage();
                                                     gameStage.setScene(new Scene(game, CELL_SIZE*7, CELL_SIZE*7.5 ));
@@ -121,6 +122,46 @@ public class Client implements Runnable {
                                                 }
                                             }
                                             
+                                            //Case if opcode is GAME
+                                            if(opcode[0].equals("g")){
+                                                
+                                                int[] coord = new int[]{
+                                                    Character.getNumericValue(opcode[2].toCharArray()[0]),
+                                                    Character.getNumericValue(opcode[2].toCharArray()[2])
+                                                };
+                                                
+                                                System.out.println(coord[0]+","+coord[1]);
+                                                
+                                                if(opcode[1].equals(game.p2)){
+                                                    game.remotePlace(coord[0], coord[1], 2);
+                                                }
+                                                
+                                                //If received message was from player 1
+                                                else if(opcode[1].equals(game.p1)){
+                                                    game.remotePlace(coord[0], coord[1], 1);
+                                                }
+                                            }
+                                            
+                                            //Case if opcode is PREVIEW
+                                            if(opcode[0].equals("p")){
+                                                
+                                                //MUST CONVERT TO INT
+                                                int coord = Character.getNumericValue(opcode[2].toCharArray()[0]);
+                                                System.out.println(coord);
+                                                
+                                                
+                                                if(!opcode[1].equals(game.user)){
+                                                    if(opcode[1].equals(game.p1)){
+                                                        for(int i = 0; i < 7; i++){game.bluePieces[i][6].setVisible(false);}
+                                                        game.bluePieces[coord][6].setVisible(true);
+                                                    }
+                                                    
+                                                    else if(opcode[1].equals(game.p2)){
+                                                        for(int i = 0; i < 7; i++){game.redPieces[i][6].setVisible(false);}
+                                                        game.redPieces[coord][6].setVisible(true);
+                                                    }
+                                                }
+                                            }
                                             
 					}
 				});
