@@ -5,6 +5,7 @@
  */
 package pkconnect4;
 
+import java.io.PrintWriter;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -30,9 +31,11 @@ public class RunningGame extends VBox{
     Circle[][] redPieces = new Circle[7][7];
     Circle[][] bluePieces = new Circle[7][7];
     
+    PrintWriter send;
     
     
-    RunningGame(String u, String u1, String u2){
+    RunningGame(String u, String u1, String u2, PrintWriter p){
+        send = p;
         user = u;
         p1 = u1;
         p2 = u2;
@@ -281,6 +284,10 @@ public class RunningGame extends VBox{
                                     bluePieces[c][6].setVisible(false);
                                     redPieces[c][6].setVisible(true);
                                     
+                                    String coordinate = c +","+ (5-pc);
+                                    
+                                    send.println("g;"+ user +";"+ coordinate);
+                                    
                                     if(gameCheck(slots)==1 || gameCheck(slots)==2){
                                         tp = "0";
                                         gameOver(slots);
@@ -301,6 +308,11 @@ public class RunningGame extends VBox{
                                     tp = p1;
                                     bluePieces[c][6].setVisible(true);
                                     redPieces[c][6].setVisible(false);
+                                    
+                                    String coordinate = c +","+ (5-pc);
+                                    
+                                    send.println("g;"+ user +";"+ coordinate);
+                                    
                                     if(gameCheck(slots)==1 || gameCheck(slots)==2){
                                         tp = "0";
                                         gameOver(slots);
@@ -315,9 +327,12 @@ public class RunningGame extends VBox{
         if(!tp.equals("0") && tp == user){ 
             if(tp.equals(p1)){
                 bluePieces[c][6].setVisible(true);
+                send.println("p;"+ user +";"+ c);
             }
+            
             else {
                 redPieces[c][6].setVisible(true);
+                send.println("p;"+ user +";"+ c);
             }
         }
     }
@@ -493,22 +508,29 @@ public class RunningGame extends VBox{
         }
     }
     
-    void remotePlace(int xVal, int yVal, String u){
+    void remotePlace(int xVal, int yVal, int u){
         
-        if(u.equals(p1)){
-            this.slots[xVal][yVal] = 1;
-            this.bluePieces[xVal][yVal].setVisible(true);
+        //If setting player 1's piece remotely
+        if(u == 1){
+            slots[xVal][yVal] = 1;
+            bluePieces[xVal][yVal].setVisible(true);
+            bluePieces[xVal][6].setVisible(false);
             tp = p2;
+            
             if(gameCheck(slots)==1 || gameCheck(slots)==2){
                 tp = "0";
                 gameOver(slots);
             }
         }
         
-        else {
-            this.slots[xVal][yVal] = 2;
-            this.redPieces[xVal][yVal].setVisible(true);
+        //If setting player 2's piece remotely
+        else if(u == 2) {
+            slots[xVal][yVal] = 2;
+            redPieces[xVal][yVal].setVisible(true);
+            redPieces[xVal][6].setVisible(false);
             tp = p1;
+            
+            
             if(gameCheck(slots)==1 || gameCheck(slots)==2){
                 tp = "0";
                 gameOver(slots);
