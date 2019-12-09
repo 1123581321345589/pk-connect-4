@@ -11,9 +11,11 @@ Players will communicate with each other during a game using text chat
 ## Getting Started
 
 ## Install
-add later
+Installation is simple! Simply move the PKConnect4_Client folder to wherever you want to store it. 
+If you wish to run a server on your machine, simply copy PKConnect4_server as well.
 ## Run
-add later
+Simply double-click on the .exe file in either PKConnect4_Client or PKConnect4_Server to launch the respective program.
+It is recommended to make a shortcut on your desktop/start menu.
 
 ## Features
 
