@@ -36,7 +36,7 @@ public class ClientThread implements Runnable {
 			/* Writer to write outgoing messages from the server to the client */
 			outgoingMessageWriter = new PrintWriter(
 					clientSocket.getOutputStream(), true);
-
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -44,15 +44,36 @@ public class ClientThread implements Runnable {
 	}
 
 	public void run() {
+		
+		
 		try {
 			this.clientName = getClientNameFromNetwork();
+			
 			Platform.runLater(new Runnable() {
+				
 
 				@Override
 				public void run() {
+					
+					try {
+						if(baseServer.checkName(clientName)) {
+							
+							String err = "d;" + clientSocket.getLocalAddress().toString() + ";0";
+							baseServer.writeToAllSockets(err);
+						}
+					
+			
+					else {
 					// TODO Auto-generated method stub
+
+					baseServer.cNames.add(clientName);
 					baseServer.clientNames.add(clientName + " - "
 							+ clientSocket.getRemoteSocketAddress());
+					}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 
 			});
@@ -76,6 +97,7 @@ public class ClientThread implements Runnable {
         public void messageDecoder(String msg){
             opcode = new String[]{"", "", ""};
             
+            
             char[] code = msg.toCharArray();
             int arrInd = 0;
             boolean[] checks = new boolean[]{true, true};
@@ -84,6 +106,7 @@ public class ClientThread implements Runnable {
             while(checks[0]){
                 if(code[arrInd] != ';'){
                     opcode[ocInd] += code[arrInd];
+                    
                 }
                 else{
                     checks[0] = false;
@@ -111,6 +134,10 @@ public class ClientThread implements Runnable {
             System.out.println("opcode[1] = "+opcode[1]);
             System.out.println("opcode[2] = "+opcode[2]);
         }
+        
+        
+  
+  
 
         
 	public void writeToServer(String input) {

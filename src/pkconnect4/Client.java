@@ -20,7 +20,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
-public class Client implements Runnable {
+public class Client extends PKConnect4 implements Runnable {
 	
 	
 	/* author: ian maloney & akash chinnasamy */
@@ -38,7 +38,7 @@ public class Client implements Runnable {
         public boolean waiting = false;
         public RunningGame game;
 
-	public Client(String hostName, int portNumber, String name) throws UnknownHostException, IOException {
+	public Client(String hostName, int portNumber) throws UnknownHostException, IOException {
 		
 			/* Try to establish a connection to the server */
 			clientSocket = new Socket(hostName, portNumber);
@@ -50,11 +50,17 @@ public class Client implements Runnable {
 			chatLog = FXCollections.observableArrayList();
                         hostList = FXCollections.observableArrayList();
 			/* Send name data to the server */
-			this.name = name;
-			clientToServerWriter.println(name);
+			
+			
 
 		
 	}
+	
+
+	
+	
+	
+	
 
 	public void writeToServer(String oc, String dest, String input) {
 		clientToServerWriter.println(oc +";"+ dest +";"+ input);
@@ -78,11 +84,44 @@ public class Client implements Runnable {
 						chatLog.add(opcode[2]);
                                             }
                                             
+                                            
                                             //Case if opcode for HOST
                                             else if(opcode[0].equals("h")){
                                                 hostList.add(eventLabel(opcode[1], opcode[2]));
                                             }
-                                            
+                                            else if(opcode[0].equals("d")) {
+                                            	
+                                            	if(opcode[1].contains(clientSocket.getInetAddress().toString())) {
+                                            		
+                                            		if(opcode[2].equals("0")) {
+														setNameTaken(true);
+
+                                            			try {
+                                            				
+															throw new nameTakenException(name);
+														} catch (nameTakenException e) {
+															// TODO Auto-generated catch block
+															tooShort();
+															stage.close();
+															
+															stage.setScene(userNameScreen(stage, Client.this));
+															         stage.setTitle("PKChat - " );
+															
+															stage.show();
+															
+														}
+															
+														
+                                            		}
+                                      
+                                            			
+                                            		}
+                                            		
+                                            		
+                                            	}
+                                            	
+                                            	
+                                      
                                             //Case if opcode is to JOIN
                                             else if (opcode[0].equals("j")){
                                                 
@@ -179,8 +218,8 @@ public class Client implements Runnable {
 				e.printStackTrace();
 			}
 		}
-	}
-        
+	
+	}    
         //Break down messages based on game protocol
         public void messageDecoder(String msg){
             
@@ -253,4 +292,29 @@ public class Client implements Runnable {
             
             return l;
         }
+        
+        
+        
+        
+       
+        
+        
+
+
+
+       
+
+
+		public void addName(String text) {
+			this.name = text;
+			
+			clientToServerWriter.println(name);
+			
+			
+			
+		}
+			
+		
+
+		
 }

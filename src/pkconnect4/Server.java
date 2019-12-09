@@ -13,6 +13,8 @@ public class Server implements Runnable {
 	private int portNumber;
 	private ServerSocket socket;
 	private ArrayList<Socket> clients;
+	public ArrayList<String> cNames;
+	
 	private ArrayList<ClientThread> clientThreads;
 	public ObservableList<String> serverLog;
 	public ObservableList<String> clientNames;
@@ -28,6 +30,7 @@ public class Server implements Runnable {
 		clients = new ArrayList<Socket>();
 		clientThreads = new ArrayList<ClientThread>();
 		socket = new ServerSocket(portNumber);
+		cNames = new ArrayList<String>();
 		
 	}
 
@@ -111,13 +114,43 @@ public class Server implements Runnable {
 		
 		
 	}
-        
+	
+	public boolean checkName(String name) throws IOException {
+		
+		if(cNames.contains(name)) {
+			
+			for (ClientThread clientThread : clientThreads) {
+				
+				if(clientThread.getClientName().equals(name)) {
+					
+					return true;
+					
+				}
+				
+				
+				
+		            }
+			
+			
+		}
+		
+		return false;
+		
+	}
+	
+	
+	
+	
+	  
       
 	public void writeToAllSockets(String input) {
+		
                 
             for (ClientThread clientThread : clientThreads) {
 		clientThread.writeToServer(input);
             }
 	}
+	
+	
 
 }

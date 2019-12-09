@@ -55,10 +55,11 @@ private final TabPane lobbyTabs = new TabPane();
 private ArrayList<Thread> threads;
 public final int CELL_SIZE = 100;
 
-private String conIp = "10.220.50.158"; // server ip connection
+private String conIp = "10.220.49.118"; // server ip connection
 private int conPort = 9999; // server port number
-
+public boolean taken;
 public final String style = "-fx-background: white;";
+public Stage stage;
 
 @Override
 public void start(Stage stage) throws Exception{
@@ -71,9 +72,17 @@ public void start(Stage stage) throws Exception{
 	stage.show();
 
 }
+public void setNameTaken(boolean pls) {
+	
+	this.taken = pls;
+
+}
+public boolean getNameTaken() {
+	return taken;
+}
 
 //Sets up Chatroom UI layout
-private Scene initChatBox(Client client){
+public Scene initChatBox(Client client){
         //Create TabPane and Tabs for Main Lobby
         Tab tab1 = new Tab("CHAT");
         Tab tab2 = new Tab("GAMES");
@@ -159,11 +168,6 @@ public Scene welcomeScreen(Stage stage){
 	rootPane.setSpacing(10);
 	rootPane.setAlignment(Pos.CENTER);
 
-	/* Make the text fields and set properties */
-	TextField nameField = new TextField();
-	
-	/* Make the labels and set properties */
-	Label nameLabel = new Label("Please choose a User Name");
 	
 	Label errorLabel = new Label();
 	
@@ -178,19 +182,14 @@ public Scene welcomeScreen(Stage stage){
 			Client client;
 			try {
 				
-                                compute(nameField.getText());
-				client = new Client(conIp, conPort, nameField
-						.getText());
-				Thread clientThread = new Thread(client);
-				clientThread.setDaemon(true);
-				clientThread.start();
-				threads.add(clientThread);
-                                client.name = nameField.getText();
+				client = new Client(conIp, conPort);
+				
+                                
                                 
 				/* Change the scene of the primaryStage */
 				stage.close();
-				stage.setScene(initChatBox(client));
-                                stage.setTitle("PK-Chat - User: "+ client.name);
+				stage.setScene(userNameScreen(stage, client));
+                                stage.setTitle("PKChat - User Screen");
 				stage.show();
 			}
 	
@@ -203,6 +202,79 @@ public Scene welcomeScreen(Stage stage){
 				errorLabel.setTextFill(Color.RED);
 				errorLabel.setText("Invalid port number, try again");
 			}
+			
+			
+		}
+	});
+
+	/*
+	 * Add the components to the root pane arguments are (Node, Column
+	 * Number, Row Number)
+	 */
+
+	rootPane.getChildren().addAll(submitClientInfoButton,errorLabel);
+	
+	
+	/* Make the Scene and return it */
+	return new Scene(rootPane, 400, 400);
+	
+}
+
+public Scene userNameScreen(Stage stage, Client client) {
+	
+	this.stage = stage;
+	
+	
+	VBox rootPane = new VBox();
+	rootPane.setPadding(new Insets(20));
+	rootPane.setSpacing(10);
+	rootPane.setAlignment(Pos.CENTER);
+
+	/* Make the text fields and set properties */
+	TextField nameField = new TextField();
+	
+	/* Make the labels and set properties */
+	Label nameLabel = new Label("Please choose a User Name");
+	
+	Label errorLabel = new Label();
+	Button submitClientInfoButton = new Button("SUBMIT");
+	submitClientInfoButton.setOnAction(new EventHandler<ActionEvent>() {
+		@Override
+		public void handle(ActionEvent Event) {
+			// TODO Auto-generated method stub
+			/* Instantiate the client class and start it's thread */
+			
+			try {
+				
+                
+				compute(nameField.getText());
+				
+				client.addName(nameField.getText());
+				
+               
+				
+				Thread clientThread = new Thread(client);
+				clientThread.setDaemon(true);
+				clientThread.start();
+				threads.add(clientThread);
+				
+				client.writeToServer("r", conIp, "0");
+			
+				
+					stage.close();
+					
+					stage.setScene(initChatBox(client));
+					         stage.setTitle("PKChat - " + client.name);
+					
+					stage.show();
+					
+				
+				
+			
+				
+			}
+	
+			
 			catch (nameException e) {
 				tooShort();
 				
@@ -223,7 +295,15 @@ public Scene welcomeScreen(Stage stage){
 	/* Make the Scene and return it */
 	return new Scene(rootPane, 400, 400);
 	
+	
 }
+
+
+
+
+
+
+
 
 // Error Message for Invalid Username input
 void tooShort(){
@@ -264,6 +344,11 @@ public static void compute(String name) throws nameException {
 
 
 
+
+
+
+
+
     //Alert message informing user game is over
     void hosting(){
         Alert quit = new Alert(Alert.AlertType.ERROR, "", 
@@ -277,6 +362,10 @@ public static void compute(String name) throws nameException {
             quit.close();
         }
     }
+    
+    
+    
+   
 
 
 public static void main(String[] args) {
