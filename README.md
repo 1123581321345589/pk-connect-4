@@ -25,11 +25,15 @@ add later
 
 ## References
 
-1. Labs 3 & 4 from class for chat client/server relations
-2.https://github.com/adolfintel/voicechat used as a reference for unimplemented voice chat
-3.https://fdossena.com/?p=voip/index.frag used as a reference for unimplemented voice chat
-4.https://github.com/aboullaite/Multi-Client-Server-chat-application used as a guide on client/server with UI
-5.https://www.youtube.com/watch?v=kqBmsLvWU14 used as a guide on client/sever with UI
+1. Labs 3 & 4 from class for chat client/server relations 
+
+ 2.https://github.com/adolfintel/voicechat used as a reference for unimplemented voice chat
+
+ 3.https://fdossena.com/?p=voip/index.frag used as a reference for unimplemented voice chat
+
+ 4.https://github.com/aboullaite/Multi-Client-Server-chat-application used as a guide on client/server with UI
+
+ 5.https://www.youtube.com/watch?v=kqBmsLvWU14 used as a guide on client/sever with UI
 
 ## Team members
 
