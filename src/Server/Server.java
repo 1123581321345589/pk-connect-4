@@ -1,4 +1,4 @@
-package pkconnect4;
+package Server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import Client.ChatHandler;
 
 public class Server implements Runnable {
 	private int portNumber;
@@ -17,6 +18,8 @@ public class Server implements Runnable {
 	public ObservableList<String> serverLog;
 	public ObservableList<String> clientNames;
         private int gameInd = 0;
+        
+        Socket socke = null;
         
         /* String array containing message formatted for game protocol */
         public String[] opcode = new String[3];
@@ -64,6 +67,7 @@ public class Server implements Runnable {
 				});
 
 				final Socket clientSocket = socket.accept();
+				
 
 				/* Add the incoming socket connection to the list of clients */
 				clients.add(clientSocket);
@@ -84,7 +88,19 @@ public class Server implements Runnable {
 				clientThreads.add(clientThreadHolderClass);
 				clientThread.setDaemon(true);
 				clientThread.start();
+				
+				ClientThread clientVThreadHolderClass = new ClientThread(
+						clientSocket, this);
+				Thread clientVThread = new Thread(clientVThreadHolderClass);
+				ChatHandler handler = new ChatHandler(socket.accept());
+				clientVThread.setDaemon(true);
+				clientVThread.start();
+                handler.start();
+                
+                
+                ServerApplication.threads.add(clientVThread);
 				ServerApplication.threads.add(clientThread);
+				
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
