@@ -23,7 +23,7 @@ It is recommended to make a shortcut on your desktop/start menu.
 2. Player Lobby (for finding games and general communications) with Text Chat
 
 ## Demo
-add later
+https://www.youtube.com/watch?v=rxPQxZT7FF0&feature=youtu.be
 
 ## References
 
